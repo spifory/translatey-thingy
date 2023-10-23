@@ -52,13 +52,23 @@ async fn event_handler(
             old_if_available,
             new,
         } => {
-            let old_nick = old_if_available.clone().unwrap().nick.unwrap_or("Nothing".to_string());
+            let old_nick = old_if_available
+                .clone()
+                .unwrap()
+                .nick
+                .unwrap_or("Nothing".to_string());
             let new_nick = new.nick.clone().unwrap_or("Nothing".to_string());
 
             match env::var("LOG_CHANNEL") {
                 Ok(v) => {
-                    let _ = send_log_message(ctx, old_nick, new_nick, new.clone(), ChannelId(v.parse::<u64>()?))
-                        .await;
+                    let _ = send_log_message(
+                        ctx,
+                        old_nick,
+                        new_nick,
+                        new.clone(),
+                        ChannelId(v.parse::<u64>()?),
+                    )
+                    .await;
                 }
                 Err(e) => panic!("{}", e),
             }
@@ -83,7 +93,9 @@ async fn send_log_message(
 ) -> Result<(), Error> {
     let mut response = format!(
         "{}'s nickname has been updated:\n\n`{}` -> `{}`",
-        user.mention(), old_nick, new_nick,
+        user.mention(),
+        old_nick,
+        new_nick,
     )
     .to_owned();
 
