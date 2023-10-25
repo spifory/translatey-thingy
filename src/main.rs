@@ -16,6 +16,7 @@ mod commands;
 #[tokio::main]
 async fn main() {
     dotenv().ok().unwrap();
+    env_logger::init();
 
     let intents =
         GatewayIntents::GUILD_MEMBERS | GatewayIntents::GUILDS | GatewayIntents::GUILD_PRESENCES;
@@ -59,24 +60,23 @@ async fn event_handler(
                 .unwrap_or("Nothing".to_string());
             let new_nick = new.nick.clone().unwrap_or("Nothing".to_string());
 
-            match env::var("LOG_CHANNEL") {
-                Ok(v) => {
-                    let _ = send_log_message(
-                        ctx,
-                        old_nick,
-                        new_nick,
-                        new.clone(),
-                        ChannelId(v.parse::<u64>()?),
-                    )
-                    .await;
-                }
-                Err(e) => panic!("{}", e),
+            if let Ok(_log_channel ) = env::var("LOG_CHANNEL") {
+                let log_channel = ChannelId(_log_channel.parse::<u64>()?);
+                let _ = send_log_message(ctx, old_nick, new_nick, new.clone(), log_channel).await;
             }
+
         }
         Event::Ready { data_about_bot } => {
-            println!(
+            if env::var("LOG_CHANNEL").is_err() {
+                log::warn!(
+                    "Env variable `LOG_CHANNEL` not set. Nickname changes will not be logged."
+                )
+            }
+
+            log::info!(
                 "Logged in as {} ({})",
-                data_about_bot.user.name, data_about_bot.user.id
+                data_about_bot.user.name,
+                data_about_bot.user.id
             )
         }
         _ => {}
@@ -96,8 +96,7 @@ async fn send_log_message(
         user.mention(),
         old_nick,
         new_nick,
-    )
-    .to_owned();
+    );
 
     if new_nick != "Nothing" {
         response.push_str(&format!(
