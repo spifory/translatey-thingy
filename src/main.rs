@@ -24,8 +24,8 @@ async fn main() {
     Framework::builder()
         .options(FrameworkOptions {
             commands: vec![translate_nick()],
-            event_handler: |_ctx, event, _framework, _data| {
-                Box::pin(event_handler(_ctx, event, _framework, _data))
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(event_handler(ctx, event, framework, data))
             },
             ..Default::default()
         })
