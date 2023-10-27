@@ -15,7 +15,7 @@ mod commands;
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok().unwrap();
+    dotenv().ok();
     env_logger::init();
 
     let intents =
