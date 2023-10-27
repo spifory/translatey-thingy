@@ -60,7 +60,7 @@ async fn event_handler(
                 .unwrap_or("Nothing".to_string());
             let new_nick = new.nick.clone().unwrap_or("Nothing".to_string());
 
-            if let Ok(_log_channel ) = env::var("LOG_CHANNEL") {
+            if let Ok(_log_channel) = env::var("LOG_CHANNEL") {
                 let log_channel = ChannelId(_log_channel.parse::<u64>()?);
                 let _ = send_log_message(ctx, old_nick, new_nick, new.clone(), log_channel).await;
             }

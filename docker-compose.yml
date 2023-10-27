@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  bot:
+    restart: unless-stopped
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      BOT_TOKEN: $BOT_TOKEN
+      LOG_CHANNEL: $LOG_CHANNEL
+      RUST_LOG: ${RUST_LOG:-info}
